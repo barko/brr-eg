@@ -1,0 +1,14 @@
+(library
+  (name proto)
+  (libraries atdgen)
+)
+
+(rule
+ (targets protocol_j.ml protocol_j.mli)
+ (deps protocol.atd)
+ (action (run atdgen -j -j-std %{deps})))
+
+(rule
+  (targets protocol_t.ml protocol_t.mli)
+  (deps protocol.atd)
+  (action (run atdgen -t %{deps})))

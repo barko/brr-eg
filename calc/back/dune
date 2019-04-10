@@ -1,0 +1,5 @@
+(executable
+  (name server)
+  (preprocess (pps lwt_ppx))
+  (libraries cohttp-lwt-unix atdgen proto)
+)

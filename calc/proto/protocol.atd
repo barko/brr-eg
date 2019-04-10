@@ -1,0 +1,12 @@
+type session = string
+
+type front_to_back = [
+  | NewSession
+  | Add of (session * (int * int))
+]
+
+type back_to_front = [
+  | NewSession of session
+  | Add of int
+  | InvalidSession
+]
