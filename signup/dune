@@ -1,0 +1,5 @@
+(executable
+  (name signup)
+  (libraries js_of_ocaml note brr )
+)
+
