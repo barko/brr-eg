@@ -1,14 +1,14 @@
 open Note
 open Brr
 
-let str = Jstr.v
+let v = Jstr.v
 
 let main id () =
-  match El.find_id (str id) with
+  match El.find_id (v id) with
   | None -> Debug.pr "element %S not found\n" id
   | Some el ->
-    let decr_button = El.button [`Txt (str "-")] in
-    let incr_button = El.button [`Txt (str "+")] in
+    let decr_button = El.button [`Txt (v "-")] in
+    let incr_button = El.button [`Txt (v "+")] in
 
     let incr x = x + 1 in
     let decr x = x - 1 in
@@ -22,7 +22,7 @@ let main id () =
     let children_s = S.map (
       fun count -> [
           decr_button;
-          `Txt (str (string_of_int count));
+          `Txt (v (string_of_int count));
           incr_button
         ]
     ) counter_s in
