@@ -1,0 +1,5 @@
+(executables
+  (names ttt ttt_history)
+  (libraries js_of_ocaml note brr)
+)
+
