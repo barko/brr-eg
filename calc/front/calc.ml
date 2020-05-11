@@ -9,7 +9,11 @@ module Http = struct
 
     let callback _ =
       match req##.readyState with
-      | XmlHttpRequest.DONE -> send (Js.to_string req##.responseText)
+      | XmlHttpRequest.DONE -> (
+        match Js.Opt.to_option req##.responseText with
+        | None -> ()
+        | Some s -> send (Js.to_string s)
+      )
       | _ -> ()
     in
     req##.onreadystatechange := Js.wrap_callback callback;
@@ -102,7 +106,7 @@ let main root () =
   El.set_children root [table];
 
   let int_of_value el =
-    int_of_string (Jstr.to_string (El.get_prop Prop.value el))
+    int_of_string (Jstr.to_string (El.get_prop Jprop.value el))
   in
 
   let get_args _ =

@@ -1,5 +1,5 @@
 (* utilities *)
-module IntMap = Map.Make(struct type t = int let compare = Pervasives.compare end)
+module IntMap = Map.Make(struct type t = int let compare = compare end)
 
 let range =
   fun n ->

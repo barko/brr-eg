@@ -6,19 +6,19 @@ open Brr
 let v = Jstr.v
 
 let login =
-  let email = El.input ~atts:[Att.placeholder (v "email")] [] in
+  let email = El.input ~at:[At.placeholder (v "email")] [] in
 
   let password =
-    let atts = [v "type", v "password"; Att.placeholder (v "password")] in
-    El.input ~atts []
+    let at = [v "type", v "password"; At.placeholder (v "password")] in
+    El.input ~at []
   in
 
   let submit_button =
-    let atts = [v "type", v "submit"; v "value", v "login"] in
-    El.input ~atts []
+    let at = [v "type", v "submit"; v "value", v "login"] in
+    El.input ~at []
   in
 
-  let reset_link = El.a ~atts:[Att.href (v "#")] [`Txt (v "forgot password?")] in
+  let reset_link = El.a ~at:[At.href (v "#")] [`Txt (v "forgot password?")] in
   let click_reset = Ev.(for_el reset_link click (fun _ -> `Reset)) in
 
   let table = El.table [
@@ -30,14 +30,14 @@ let login =
   table, click_reset
 
 let reset =
-  let email = El.input ~atts:[Att.placeholder (v "email")] [] in
+  let email = El.input ~at:[At.placeholder (v "email")] [] in
 
   let submit_button =
-    let atts = [v "type", v "submit"; v "value", v "reset"] in
-    El.input ~atts []
+    let at = [v "type", v "submit"; v "value", v "reset"] in
+    El.input ~at []
   in
 
-  let login_link = El.a ~atts:[Att.href (v "#")] [`Txt (v "login")] in
+  let login_link = El.a ~at:[At.href (v "#")] [`Txt (v "login")] in
   let click_login = Ev.(for_el login_link click (fun _ -> `Login)) in
 
   let table = El.table [

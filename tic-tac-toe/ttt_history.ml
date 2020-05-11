@@ -98,14 +98,14 @@ let empty =
   let snapshot_0 = { state = empty_state; button; jump } in
   { history = [snapshot_0]; current = 0 }
 
-let att1 c =
-  [Att.class' (v c)]
+let at1 c =
+  [At.class' (v c)]
 
 let txt_of_turn gs =
   [`Txt (v (string_of_turn gs))]
 
 let cell idx =
-  let el = El.button ~atts:(att1 "square") [] in
+  let el = El.button ~at:(at1 "square") [] in
   let ev = Ev.(for_el el click (fun _ -> idx)) in
   el, ev
 
@@ -113,14 +113,14 @@ let row start_idx =
   let b0, e0 = cell (start_idx    ) in
   let b1, e1 = cell (start_idx + 1) in
   let b2, e2 = cell (start_idx + 2) in
-  let el = El.div ~atts:(att1 "board-row") [b0; b1; b2] in
+  let el = El.div ~at:(at1 "board-row") [b0; b1; b2] in
   el, b0, b1, b2, E.select [e0; e1; e2]
 
 let square () =
   let r0, b0, b1, b2, ev012 = row 0 in
   let r1, b3, b4, b5, ev345 = row 3 in
   let r2, b6, b7, b8, ev678 = row 6 in
-  let el = El.div ~atts:(att1 "game-board") [r0; r1; r2] in
+  let el = El.div ~at:(at1 "game-board") [r0; r1; r2] in
   let ev = E.select [ev012; ev345; ev678] in
   let ev_w = E.map (fun idx -> `Mark idx) ev in
   let cells = [| b0; b1; b2; b3; b4; b5; b6; b7; b8 |] in
@@ -182,11 +182,11 @@ let cell_txt = function
 let ui () =
   let sq, cell_ev, cells = square () in
   let turn_div = El.div [] in
-  let game_board = El.div ~atts:(att1 "game-board") [sq] in
+  let game_board = El.div ~at:(at1 "game-board") [sq] in
   let jump_button_list = El.ol [] in
-  let game_info = El.div ~atts:(att1 "game-info")
+  let game_info = El.div ~at:(at1 "game-info")
       [turn_div; jump_button_list] in
-  let game = El.div ~atts:(att1 "game") [game_board; game_info] in
+  let game = El.div ~at:(at1 "game") [game_board; game_info] in
   let eq = ( == ) in
 
   let def t_s =

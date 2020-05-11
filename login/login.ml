@@ -6,16 +6,16 @@ let main id () =
   match El.find_id (v id) with
   | None -> Debug.pr "element %S not found\n" id
   | Some el ->
-    let email = El.input ~atts:[Att.placeholder (v "email")] [] in
+    let email = El.input ~at:[At.placeholder (v "email")] [] in
 
     let password =
-      let atts = [v "type", v "password"; Att.placeholder (v "password")] in
-      El.input ~atts []
+      let at = [v "type", v "password"; At.placeholder (v "password")] in
+      El.input ~at []
     in
 
     let submit_button =
-      let atts = [v "type", v "submit"] in
-      El.input ~atts []
+      let at = [v "type", v "submit"] in
+      El.input ~at []
     in
 
     let table = El.table [
