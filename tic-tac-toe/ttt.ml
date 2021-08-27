@@ -67,16 +67,17 @@ let string_of_turn = function
 
 open Note
 open Brr
+open Brr_note
 
 let at1 c =
   [At.class' (v c)]
 
 let txt_of_turn gs =
-  [`Txt (v (string_of_turn gs))]
+  [El.txt' (string_of_turn gs)]
 
 let cell idx =
   let el = El.button ~at:(at1 "square") [] in
-  let ev = Ev.(for_el el click (fun _ -> idx)) in
+  let ev = Evr.on_el Ev.click (fun _ -> idx) el in
   el, ev
 
 let row start_idx =
@@ -120,13 +121,13 @@ let update msg t =
     | Marked _ -> t
 
 let cell_txt = function
-  | Empty    -> [            ]
-  | Marked X -> [`Txt (v "X")]
-  | Marked O -> [`Txt (v "O")]
+  | Empty    -> [           ]
+  | Marked X -> [El.txt' "X"]
+  | Marked O -> [El.txt' "O"]
 
 let ui () =
-  let new_game = El.button [`Txt (v "new game")] in
-  let new_game_ev = Ev.(for_el new_game click (fun _ -> `NewGame)) in
+  let new_game = El.button [El.txt' "new game"] in
+  let new_game_ev = Evr.on_el Ev.click (fun _ -> `NewGame) new_game in
   let sq, ev_idx, cells = square () in
   let ev = E.select [new_game_ev; ev_idx] in
 
@@ -141,22 +142,22 @@ let ui () =
   Array.iteri (
     fun i cell_s ->
       let cell_txt_s = S.map cell_txt cell_s in
-      El.def_children cells.(i) cell_txt_s
+      Elr.def_children cells.(i) cell_txt_s
   ) cell_s_arr;
 
   let turn_txt_s = S.map txt_of_turn turn_s in
   let game_outcome = El.div [] in
-  El.def_children game_outcome turn_txt_s;
+  Elr.def_children game_outcome turn_txt_s;
 
   let game_board = El.div ~at:(at1 "game-board") [sq] in
   let game_info = El.div ~at:(at1 "game-info") [game_outcome; new_game] in
   El.div ~at:(at1 "game") [game_board; game_info]
 
-let main id () =
-  match El.find_id (v id) with
-  | None -> Debug.pr "element %S not found" id
+let main id =
+  match Document.find_el_by_id G.document (v id) with
+  | None -> Console.(debug [str (Printf.sprintf "element %S not found" id)])
   | Some el ->
     let game = ui () in
     El.set_children el [game]
 
-let () = App.run (main "root")
+let () = main "root"

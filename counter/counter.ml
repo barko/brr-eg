@@ -1,20 +1,21 @@
 open Note
 open Brr
+open Brr_note
 
 let v = Jstr.v
 
-let main id () =
-  match El.find_id (v id) with
-  | None -> Debug.pr "element %S not found\n" id
+let main id =
+  match Document.find_el_by_id G.document (v id) with
+  | None -> Console.(debug [str (Printf.sprintf "element %S not found" id)])
   | Some el ->
-    let decr_button = El.button [`Txt (v "-")] in
-    let incr_button = El.button [`Txt (v "+")] in
+    let decr_button = El.(button [txt' "-"]) in
+    let incr_button = El.(button [txt' "+"]) in
 
     let incr x = x + 1 in
     let decr x = x - 1 in
 
-    let decr_e = Ev.(for_el decr_button click (fun _ -> decr)) in
-    let incr_e = Ev.(for_el incr_button click (fun _ -> incr)) in
+    let decr_e = Evr.on_el Ev.click (fun _ -> decr) decr_button in
+    let incr_e = Evr.on_el Ev.click (fun _ -> incr) incr_button in
 
     let decr_incr_e = E.select [decr_e; incr_e] in
     let counter_s = S.accum 0 decr_incr_e in
@@ -22,11 +23,11 @@ let main id () =
     let children_s = S.map (
       fun count -> [
           decr_button;
-          `Txt (v (string_of_int count));
+          El.txt' (string_of_int count);
           incr_button
         ]
     ) counter_s in
 
-    El.def_children el children_s
+    Elr.def_children el children_s
 
-let () = App.run (main "root")
+let () = main "root"

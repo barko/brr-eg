@@ -1,5 +1,6 @@
 open Note
 open Brr
+open Brr_note
 
 module Counter : sig
   type t
@@ -55,21 +56,18 @@ type counter_action = [
   | `Delete
 ]
 
-let txt s =
-  [`Txt (Jstr.v s)]
-
 let counter_ui :
-  label:Jstr.t -> Counter.t -> counter_action event * [> El.t] =
+  label:Jstr.t -> Counter.t -> counter_action event * El.t =
 fun ~label counter ->
-  let label = El.span [`Txt label] in
-  let decr_button = El.button (txt "-") in
-  let incr_button = El.button (txt "+") in
-  let delete_button = El.button (txt "x") in
-  let value = El.span (txt (string_of_int (Counter.value counter))) in
+  let label = El.span [El.txt label] in
+  let decr_button = El.button [El.txt' "-"] in
+  let incr_button = El.button [El.txt' "+"] in
+  let delete_button = El.button [El.txt' "x"] in
+  let value = El.span [El.txt' (string_of_int (Counter.value counter))] in
   let el = El.div [label; decr_button; value; incr_button; delete_button] in
-  let decr = Ev.(for_el decr_button click (stamp `Decr)) in
-  let incr = Ev.(for_el incr_button click (stamp `Incr)) in
-  let delete = Ev.(for_el delete_button click (stamp `Delete)) in
+  let decr = Evr.on_el Ev.click (Evr.stamp `Decr) decr_button in
+  let incr = Evr.on_el Ev.click (Evr.stamp `Incr) incr_button in
+  let delete = Evr.on_el Ev.click (Evr.stamp `Delete) delete_button in
   let action = E.select [decr; incr; delete] in
   action, el
 
@@ -78,7 +76,7 @@ type counters_action = [
   | `Update of Counters.idx * counter_action
 ]
 
-let counters_ui : Counters.t -> counters_action event * [> El.t] =
+let counters_ui : Counters.t -> counters_action event * El.t =
 fun cs ->
   let cs_count = Counters.count cs in
   let counter_ui i c (actions, els) =
@@ -88,8 +86,8 @@ fun cs ->
   in
   let actions, els = Counters.foldi counter_ui cs ([], []) in
   let update = E.map (fun act -> `Update act) (E.select actions)  in
-  let add_button = El.button (txt "Add counter") in
-  let add = Ev.(for_el add_button click (stamp `Add)) in
+  let add_button = El.button [El.txt' "Add counter"] in
+  let add = Evr.on_el Ev.click (Evr.stamp `Add) add_button in
   E.select [add; update], El.div [add_button; El.div (List.rev els)]
 
 let update_counters : counters_action -> Counters.t -> Counters.t =
@@ -115,13 +113,14 @@ let ui cs =
   in
   S.fix cs def
 
-let main id () =
-  match El.find_id (Jstr.v id) with
-  | None -> Debug.pr "element %S not found\n" id
+let v = Jstr.v
+
+let main id =
+  match Document.find_el_by_id G.document (v id) with
+  | None -> Console.(debug [str (Printf.sprintf "element %S not found" id)])
   | Some el ->
     let cs, ui_el = ui Counters.empty in
     Logr.hold (S.log cs (fun _ -> ()));
-    El.def_children el (S.map (fun el -> [el]) ui_el)
+    Elr.def_children el (S.map (fun el -> [el]) ui_el)
 
-let () =
-  App.run ~name:"counters" (main "root")
+let () = main "root"

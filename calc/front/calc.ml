@@ -90,23 +90,24 @@ struct
 end
 
 open Brr
+open Brr_note
 
 let v = Jstr.v
 
-let main root () =
-  let arg1 = El.input [] in
-  let arg2 = El.input [] in
+let main root =
+  let arg1 = El.input () in
+  let arg2 = El.input () in
   let sum_el = El.span [] in
-  let sum_button = El.button [`Txt (v "sum")] in
+  let sum_button = El.(button [txt' "sum"]) in
   let table = El.table [
-    El.tr [El.td [`Txt (v "arg 1:"); arg1 ]];
-    El.tr [El.td [`Txt (v "arg 2:"); arg2 ]];
+    El.tr [El.(td [txt' "arg 1:"; arg1 ])];
+    El.tr [El.(td [txt' "arg 2:"; arg2 ])];
     El.tr [El.td [sum_button; sum_el]];
   ] in
   El.set_children root [table];
 
   let int_of_value el =
-    int_of_string (Jstr.to_string (El.get_prop Jprop.value el))
+    int_of_string (Jstr.to_string (El.prop El.Prop.value el))
   in
 
   let get_args _ =
@@ -118,17 +119,17 @@ let main root () =
       None
   in
 
-  let add_opt_ev = Ev.(for_el sum_button click get_args) in
+  let add_opt_ev = Evr.on_el Ev.click get_args sum_button in
   let add_ev = E.Option.on_some add_opt_ev in
 
   let sum_e = Adder.create add_ev in
-  let sum_txt = E.map (fun i -> [`Txt (v (string_of_int i))]) sum_e in
-  El.rset_children sum_el ~on:sum_txt
+  let sum_txt = E.map (fun i -> [El.txt' (string_of_int i)]) sum_e in
+  Elr.set_children sum_el ~on:sum_txt
 
 
 let () =
   let id = "root" in
-  match El.find_id (v id) with
-  | None -> Log.info (fun m -> m "element %S not found" id)
+  match Document.find_el_by_id G.document (v id) with
+  | None -> Console.(info [str (Printf.sprintf "element %S not found" id)])
   | Some root ->
-    App.run ~name:"calc" (main root)
+    main root

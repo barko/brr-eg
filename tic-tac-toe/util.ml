@@ -16,7 +16,7 @@ let get map i =
   IntMap.find i map
 
 let sp = Printf.sprintf
-let v = Brr.Jstr.v
+let v = Jstr.v
 
 (* remove the first n elements of the list *)
 let decapitate_list =

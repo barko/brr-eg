@@ -2,20 +2,20 @@ open Brr
 
 let v = Jstr.v
 
-let main id () =
-  match El.find_id (v id) with
-  | None -> Debug.pr "element %S not found\n" id
+let main id =
+  match Document.find_el_by_id G.document (v id) with
+  | None -> Console.(debug [str (Printf.sprintf "element %S not found" id)])
   | Some el ->
-    let email = El.input ~at:[At.placeholder (v "email")] [] in
+    let email = El.input ~at:[At.placeholder (v "email")] () in
 
     let password =
-      let at = [v "type", v "password"; At.placeholder (v "password")] in
-      El.input ~at []
+      let at = [At.type' (v "password"); At.placeholder (v "password")] in
+      El.input ~at ()
     in
 
     let submit_button =
-      let at = [v "type", v "submit"] in
-      El.input ~at []
+      let at = [At.type' (v "submit")] in
+      El.input ~at ()
     in
 
     let table = El.table [
@@ -27,4 +27,4 @@ let main id () =
 
     El.set_children el [table]
 
-let () = App.run (main "root")
+let () = main "root"

@@ -1,5 +1,5 @@
 (executable
   (name login)
-  (libraries js_of_ocaml note brr )
+  (libraries js_of_ocaml brr)
 )
 

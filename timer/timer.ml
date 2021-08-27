@@ -1,5 +1,7 @@
 open Note
 open Brr
+open Brr_note
+open Brr_note_kit
 
 let v = Jstr.v
 
@@ -14,9 +16,9 @@ let every secs =
   e
 
 
-let main id () =
-  match El.find_id (v id) with
-  | None -> Debug.pr "element %s not found\n" id;
+let main id =
+  match Document.find_el_by_id G.document (v id) with
+  | None -> Console.(debug [str (Printf.sprintf "element %S not found" id)])
   | Some root ->
 
     let delta_secs = 1.0 in
@@ -26,8 +28,8 @@ let main id () =
     let sum_e = E.accum 0.0 incr_e in
     let sum_s = S.hold 0.0 sum_e in
 
-    let sum_txt f = [`Txt (v (Printf.sprintf "%0.1f" f))] in
+    let sum_txt f = [El.txt' (Printf.sprintf "%0.1f" f)] in
     let sum_txt_s = S.map sum_txt sum_s in
-    El.def_children root sum_txt_s
+    Elr.def_children root sum_txt_s
 
-let () = App.run (main "root")
+let () = main "root"

@@ -1,6 +1,6 @@
 (executable
   (name calc)
-  (libraries js_of_ocaml note brr proto )
+  (libraries js_of_ocaml brr.note proto)
   (preprocess (pps js_of_ocaml-ppx))
 )
 

@@ -23,7 +23,7 @@ type msg = [ `JumpTo of int | `Mark of int ]
 
 type snapshot = {
   state : state;
-  button : El.child;
+  button : El.t;
   jump : msg event;
 }
 
@@ -82,15 +82,17 @@ let string_of_turn = function
   | Winner O  -> "winner: O"
   | Draw      -> "draw"
 
+open Brr_note
+
 let jump_button idx =
   let txt =
     if idx = 0 then
-      [`Txt (v "new game")]
+      [El.txt' "new game"]
     else
-      [`Txt (v (sp "go to move #%d" idx))]
+      [El.txt' (sp "go to move #%d" idx)]
   in
   let button = El.button txt in
-  let ev = Ev.(for_el button click (fun _ -> `JumpTo idx)) in
+  let ev = Evr.on_el Ev.click (fun _ -> `JumpTo idx) button in
   El.li [button], ev
 
 let empty =
@@ -102,11 +104,11 @@ let at1 c =
   [At.class' (v c)]
 
 let txt_of_turn gs =
-  [`Txt (v (string_of_turn gs))]
+  [El.txt' (string_of_turn gs)]
 
 let cell idx =
   let el = El.button ~at:(at1 "square") [] in
-  let ev = Ev.(for_el el click (fun _ -> idx)) in
+  let ev = Evr.on_el Ev.click (fun _ -> idx) el in
   el, ev
 
 let row start_idx =
@@ -175,9 +177,9 @@ let buttons_jumps t =
 
 
 let cell_txt = function
-  | Empty    -> [            ]
-  | Marked X -> [`Txt (v "X")]
-  | Marked O -> [`Txt (v "O")]
+  | Empty    -> [           ]
+  | Marked X -> [El.txt' "X"]
+  | Marked O -> [El.txt' "O"]
 
 let ui () =
   let sq, cell_ev, cells = square () in
@@ -196,7 +198,7 @@ let ui () =
     let jump_e = E.swap jumps_s in
 
     let ev = E.select [cell_ev; jump_e] in
-    El.def_children jump_button_list buttons_s;
+    Elr.def_children jump_button_list buttons_s;
 
     let state_s = S.map ~eq (
       fun { history; current } ->
@@ -214,11 +216,11 @@ let ui () =
     Array.iteri (
       fun i cell_s ->
         let cell_txt_s = S.map ~eq cell_txt cell_s in
-        El.def_children cells.(i) cell_txt_s
+        Elr.def_children cells.(i) cell_txt_s
     ) cell_s_arr;
 
     let turn_txt_s = S.map ~eq txt_of_turn turn_s in
-    El.def_children turn_div turn_txt_s;
+    Elr.def_children turn_div turn_txt_s;
 
     let t_ev = S.sample t_s ~on:ev update in
     let t_s' = S.hold ~eq empty t_ev in
@@ -226,13 +228,13 @@ let ui () =
   in
   S.fix ~eq empty def, game
 
-let main id () =
-  match El.find_id (v id) with
-  | None -> Debug.pr "element %S not found" id
+let main id =
+  match Document.find_el_by_id G.document (v id) with
+  | None -> Console.(debug [str (Printf.sprintf "element %S not found" id)])
   | Some root ->
     let t_s, game = ui () in
     Logr.hold (S.log t_s (fun _ -> ()));
     El.set_children root [game]
 
 
-let () = App.run (main "root")
+let () = main "root"
